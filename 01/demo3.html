@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>封装和数据svg的案例</title>
+    <style>
+        *{
+            margin: 0 auto;
+            padding: 0;
+        }
+        #box{
+            margin-top: 20px;
+            box-sizing: border-box;
+            width: 800px;
+            height: 600px;
+            background: #f5f5f5;
+            /*
+            中心点：400，300
+            操作距离200的话 400，100
+            */
+
+        }
+    </style>
+</head>
+<body>
+<div id="box"></div>
+
+</body>
+<script>
+    window.onload = function () {
+
+        let oParent = document.getElementById('box')
+        let svgNS = 'http://www.w3.org/2000/svg'
+        // 准备数据
+        let centerX = oParent.offsetWidth/2;
+        let centerY = oParent.offsetHeight/2;
+
+        var data = {
+            centerNode:{text:'中心点'},
+            otherNode:[
+                {x:400,y:100,text:'外点1'},
+                {x:200,y:50,text:'外点2'},
+            ]
+        }
+
+        // 创建标签函数
+        function createEle(ele,objAttr) {
+            // 创建标签
+            let oTag = document.createElementNS(svgNS,ele)
+            // 循环遍历添加属性标签
+            for (let attr in objAttr) {
+                oTag.setAttribute(attr,objAttr[attr])
+            }
+            return oTag;
+        }
+
+        // 准备数据
+        // 创建中心圆
+        function addTag() {
+            var oSvg = createEle('svg',{'xmlns':svgNS,'width':'100%','height':'100%','version':'1.1'})
+
+            for(let i = 0;i<data.otherNode.length;i++){
+                addOtherTag(data.otherNode[i],oSvg)
+            }
+
+            var oG = createEle('g',{'style':'cursor: pointer'})
+            var oCircle = createEle('circle',{'style':'fill:#fff;stroke:#ff5000;stroke-width: 1px;','cx':centerX,'cy':centerY,'r':'50'})
+            var oText = createEle('text',{'style':'fill:red;','x':centerX,'y':centerY+5,'font-size':'12px','text-anchor':'middle'})
+            oText.innerHTML = data.centerNode.text
+
+            oG.appendChild(oCircle)
+            oG.appendChild(oText)
+
+            oSvg.appendChild(oG)
+            oParent.appendChild(oSvg)
+
+
+        }
+        addTag()
+        // 创建外边圆
+        function addOtherTag(otherAttr,oSvg) {
+            // 第一步创建线
+            var oG = createEle('g',{'style':'cursor: pointer'})
+            var oLine1 = createEle('line',{'style':'stroke:#333;','x1':otherAttr.x,'y1':otherAttr.y,'x2':centerX,'y2':centerY})
+            var oLine2 = createEle('line',{'style':'stroke:transparent;stroke-width:15;','x1':otherAttr.x,'y1':otherAttr.y,'x2':centerX,'y2':centerY})
+            var oRect = createEle('rect',{'style':'fill:#888888;','x':(otherAttr.x+centerX)/2-10,'y':(otherAttr.y+centerY)/2-10,'width':'20','height':'20'})
+            var oText = createEle('text',{'style':'fill:#fff;','x':(otherAttr.x+centerX)/2,'y':(otherAttr.y+centerY)/2+6,'font-size':'12px','text-anchor':'middle'})
+            oText.innerHTML = '?'
+            oG.appendChild(oLine1)
+            oG.appendChild(oLine2)
+            oG.appendChild(oRect)
+            oG.appendChild(oText)
+
+            oSvg.appendChild(oG)
+
+            // 第二步创建小圆
+            var oG = createEle('g',{'style':'cursor: pointer'})
+            var oCircle = createEle('circle',{'style':'fill:#fff;stroke:#ff5000;stroke-width: 1px;','cx':otherAttr.x,'cy':otherAttr.y,'r':'40'})
+            var oText = createEle('text',{'style':'fill:red;','x':otherAttr.x,'y':otherAttr.y+5,'font-size':'12px','text-anchor':'middle'})
+            oText.innerHTML = otherAttr.text
+
+            oG.appendChild(oCircle)
+            oG.appendChild(oText)
+
+            oSvg.appendChild(oG)
+            oParent.appendChild(oSvg)
+
+
+        }
+
+
+
+
+    }
+</script>
+</html>
