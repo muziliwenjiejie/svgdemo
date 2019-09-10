@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>环形图-路径友盟指数</title>
+    <style>
+        *{
+            margin: 0 auto;
+            padding: 0;
+        }
+        #box{
+            margin-top: 20px;
+            box-sizing: border-box;
+            width: 800px;
+            height: 600px;
+            background: #f5f5f5;
+            /*
+            中心点：400，300
+            操作距离200的话 400，100
+            */
+
+        }
+    </style>
+</head>
+<body>
+<div id="box">
+    <svg id="svg" width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg">
+
+    </svg>
+</div>
+</body>
+<script>
+    let SvgNS = 'http://www.w3.org/2000/svg'
+    let oParent = document.getElementById('box')
+    let oSvg = document.getElementById('svg')
+    let arrNum = [15,35,40,9]
+    let arrColor = ['pink','red','blue','yellow']
+    let angle = 360
+    let sumNum = 0
+    let outCricle = 150
+    let inCricle = 80
+    let centerX = oParent.offsetWidth/2;
+    let centerY = oParent.offsetHeight/2;
+    let outXY = [{x:centerX+outCricle,y:centerY}]
+    let inXY = [{x:centerX+inCricle,y:centerY}]
+    for (let i = 0; i < arrNum.length; i++) {
+        let adDeg = arrNum[i]/100*angle;
+        sumNum += adDeg
+        if (i == arrNum.length - 1) {
+            sumNum = 360
+        }
+        let outX = Math.cos(sumNum*Math.PI/180)*outCricle + centerX
+        let outY = Math.sin(sumNum*Math.PI/180)*outCricle + centerY
+        outXY.push({x:outX,y:outY})
+
+        let inX = Math.cos(sumNum*Math.PI/180)*inCricle + centerX
+        let inY = Math.sin(sumNum*Math.PI/180)*inCricle + centerY
+        inXY.push({x:inX,y:inY})
+    }
+    // console.log(outXY)
+    // console.log(inXY)
+
+    for (let i = 0; i < inXY.length; i++) {
+        if (i == outXY.length - 1) {
+            break;
+        }
+        // console.log(outXY[i].x+'----'+outXY[i].y)
+
+        let path ='M'+outXY[i].x+' '+outXY[i].y+'A'+outCricle+' '+outCricle+' 0 0 1 '+outXY[i+1].x+' '+outXY[i+1].y+'L'+inXY[i+1].x+' '+inXY[i+1].y+'A'+inCricle+' '+inCricle+' 0 0 0 '+inXY[i].x+' '+inXY[i].y
+        let path1 ='M'+outXY[i].x+' '+outXY[i].y+'A'+outCricle+' '+outCricle+' 0 0 1 '+outXY[i].x+' '+outXY[i].y+'L'+inXY[i].x+' '+inXY[i].y+'A'+inCricle+' '+inCricle+' 0 0 0 '+inXY[i].x+' '+inXY[i].y
+        let oPath = createTag('path',{'fill':arrColor[i],d:path})
+        let oAn = createTag('animate',{attributeName:'d',dur:1,from:path1,to:path})
+        oPath.appendChild(oAn)
+        oSvg.appendChild(oPath)
+    }
+    function createTag(tog, objAttr) {
+        let oTag = document.createElementNS(SvgNS, tog)
+        for (let attr in objAttr) {
+            oTag.setAttribute(attr,objAttr[attr])
+        }
+        return oTag
+    }
+</script>
+</html>
